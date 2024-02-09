@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snail OSC Controller</title>
+</head>
+<body>
+    <script>
+        fetch("/config.json").then((config)=>{
+            return config.json()
+        }).then((config)=>{
+             (config["parameters"]||[]).forEach(addParam);
+         });
+
+         const table = document.createElement("table")
+         document.body.appendChild(table)
+         function addParam(param) {
+            console.log(param)
+            let tr = document.createElement("tr");
+            table.appendChild(tr)
+            let td = document.createElement("td");
+            tr.appendChild(td)
+            td.innerText = param.name
+            
+            if(param["input"]) {
+                td = document.createElement("td");
+                tr.appendChild(td)
+                if(param["input"]["type"]=="Bool") {
+                    td.appendChild(createToggle(param["input"]["address"]))
+                } else if(param["input"]["type"]=="Float") {
+                    td.appendChild(createSlider(param["input"]["address"]))
+                } 
+            }
+            
+         }
+
+         function createToggle(address) {
+            let i = document.createElement("input")
+            i.type="checkbox";
+            i.onchange=()=>{
+                fetch("/osc?addr=" + address + "&bool=" + (i.checked?"1":"0"));
+            }
+            return i;
+         }
+         
+         function createSlider(address) {
+            let i = document.createElement("input")
+            i.type="range";
+            i.min="-100"
+            i.max="100"
+            i.onchange=()=>{
+                 fetch("/osc?addr=" + address + "&float=" + (i.value/100));
+            }
+            return i;
+         }
+    </script>
+</body>
+</html>

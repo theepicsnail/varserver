@@ -1,0 +1,2 @@
+vrchat_oscquery @ git+https://github.com/theepicsnail/vrchat_oscquery@main
+flask
